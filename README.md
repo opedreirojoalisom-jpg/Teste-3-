@@ -1,5 +1,5 @@
 -- Lokos Hub Panel Script
--- Auto-opening panel with all options visible
+-- Enhanced version with improved functionality
 
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
@@ -223,10 +223,45 @@ game:GetService("RunService").Heartbeat:Connect(function()
                         
                         if onScreen then
                             local direction = Vector3.new(screenPoint.X, screenPoint.Y, 0) - Vector3.new(mouse.X, mouse.Y, 0)
-                            local normalizedDirection = direction.Unit * 0.05
+                            local normalizedDirection = direction.Unit * 0.1  -- Stronger pull
                         
                             mouse.X = mouse.X + normalizedDirection.X
                             mouse.Y = mouse.Y + normalizedDirection.Y
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+
+-- Add ESP functionality
+game:GetService("RunService").Heartbeat:Connect(function()
+    if espToggle.Text == "ON" then
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        
+        -- Get all players except the local player
+        local players = game.Players:GetPlayers()
+        for _, target in pairs(players) do
+            if target ~= player then
+                local targetCharacter = target.Character
+                if targetCharacter then
+                    local torso = targetCharacter:FindFirstChild("Torso")
+                    if torso then
+                        local humanoid = targetCharacter:FindFirstChild("Humanoid")
+                        if humanoid and humanoid.Health > 0 then
+                            -- Create ESP effect around player
+                            local esp = Instance.new("BoxHandleAdornment")
+                            esp.Adornee = torso
+                            esp.Size = Vector3.new(torso.Size.X * 1.5, torso.Size.Y * 1.5, torso.Size.Z * 1.5)
+                            esp.Color3 = Color3.fromRGB(255, 0, 255)  -- Purple color
+                            esp.Transparency = 0.7
+                            esp.ZIndex = 10
+                            esp.Parent = workspace
+                            
+                            -- Remove old ESP instances after delay
+                            game:GetService("Debris"):AddItem(esp, 0.1)
                         end
                     end
                 end
